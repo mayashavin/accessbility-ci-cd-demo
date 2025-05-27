@@ -6,8 +6,8 @@ async function postComment() {
   const githubRepository = process.env.GITHUB_REPOSITORY;
   const token = process.env.GH_TOKEN;
 
-  if (!summary || summary.trim() === "") {
-    console.log("Summary is empty or only whitespace. Skipping PR comment.");
+  if (!summary || summary.trim() === '') {
+    console.log('Summary is empty or only whitespace. Skipping PR comment.');
     // Exiting with 0 because an empty summary might be a valid outcome of the previous step,
     // and we don't want to fail the workflow if the script intentionally did not produce a summary.
     // If an empty summary should be an error, the summarization script should fail.
@@ -15,18 +15,20 @@ async function postComment() {
   }
 
   if (!prNumber) {
-    console.error("Error: PR_NUMBER environment variable is not set.");
+    console.error('Error: PR_NUMBER environment variable is not set.');
     process.exit(1);
   }
 
   if (!githubRepository || !githubRepository.includes('/')) {
-    console.error("Error: GITHUB_REPOSITORY environment variable is not set or invalid.");
+    console.error(
+      'Error: GITHUB_REPOSITORY environment variable is not set or invalid.'
+    );
     process.exit(1);
   }
   const [owner, repo] = githubRepository.split('/');
 
   if (!token) {
-    console.error("Error: GH_TOKEN environment variable is not set.");
+    console.error('Error: GH_TOKEN environment variable is not set.');
     process.exit(1);
   }
 
@@ -38,31 +40,39 @@ async function postComment() {
     path: `/repos/${owner}/${repo}/issues/${prNumber}/comments`,
     method: 'POST',
     headers: {
-      'Authorization': `token ${token}`,
+      Authorization: `token ${token}`,
       'User-Agent': 'GitHub-Action-Post-Comment-Script/1.0',
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(postData),
-      'Accept': 'application/vnd.github.v3+json'
-    }
+      Accept: 'application/vnd.github.v3+json',
+    },
   };
 
   return new Promise((resolve, reject) => {
     const req = https.request(options, (res) => {
       let responseBody = '';
-      res.on('data', (chunk) => responseBody += chunk);
+      res.on('data', (chunk) => (responseBody += chunk));
       res.on('end', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          console.log(`Successfully posted comment to PR #${prNumber}. Status: ${res.statusCode}`);
+          console.log(
+            `Successfully posted comment to PR #${prNumber}. Status: ${res.statusCode}`
+          );
           resolve();
         } else {
-          console.error(`Failed to post PR comment. Status: ${res.statusCode}, Response: ${responseBody}`);
-          reject(new Error(`Failed to post comment. GitHub API responded with ${res.statusCode}`));
+          console.error(
+            `Failed to post PR comment. Status: ${res.statusCode}, Response: ${responseBody}`
+          );
+          reject(
+            new Error(
+              `Failed to post comment. GitHub API responded with ${res.statusCode}`
+            )
+          );
         }
       });
     });
 
     req.on('error', (error) => {
-      console.error("Error making HTTPS request to GitHub API:", error.message);
+      console.error('Error making HTTPS request to GitHub API:', error.message);
       reject(new Error(`HTTPS request failed: ${error.message}`));
     });
 
@@ -71,9 +81,9 @@ async function postComment() {
   });
 }
 
-postComment().catch(error => {
+postComment().catch((error) => {
   // The error messages are already logged by the point of rejection.
   // Just ensure the process exits with a failure code.
-  console.error("Script execution failed.");
+  console.error('Script execution failed.');
   process.exit(1);
 });

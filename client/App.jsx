@@ -141,24 +141,22 @@ export default function App() {
           </div>
           <AddTaskForm onAddTask={handleAddTask} />
           <TaskList tasks={tasks} onRemoveTask={handleRemoveTask} />
-          <div
-            onClick={() => alert('Clicked a generic div!')}
+          <button
+            type="button"
+            onClick={() => alert('Clicked a button!')}
             style={{
               display: 'inline-block',
               marginTop: '30px',
               padding: '10px 20px',
               backgroundColor: '#6c757d',
               color: '#ffffff',
-              cursor: 'pointer',
-              textAlign: 'center',
               borderRadius: '4px',
               border: '1px solid #6c757d',
               fontWeight: 'bold',
-              userSelect: 'none',
             }}
           >
-            Another Clickable Div (Inaccessible)
-          </div>
+            Another Clickable Element (Accessible)
+          </button>
         </>
       )}
       {currentView === 'playground' && <A11yPlayground />}
