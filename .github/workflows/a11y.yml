@@ -1,0 +1,11 @@
+name: A11y Check
+
+on: [push]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install -g @lhci/cli
+      - run: lhci autorun
