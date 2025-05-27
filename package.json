@@ -16,7 +16,8 @@
         "lhci:collect": "lhci collect",
         "lhci:assert": "lhci assert",
         "lhci:upload": "lhci upload",
-        "lhci:autorun": "lhci autorun"
+        "lhci:autorun": "lhci autorun",
+        "summarize": "node scripts/summarize-a11y.js .lighthouseci/"
     },
     "keywords": [],
     "author": "",
@@ -37,6 +38,7 @@
         "eslint": "^9.27.0",
         "eslint-plugin-jsx-a11y": "^6.10.2",
         "eslint-plugin-react": "^7.37.5",
+        "openai": "^4.103.0",
         "vite": "^6.3.5"
     }
 }
