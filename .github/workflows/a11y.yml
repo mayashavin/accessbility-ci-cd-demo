@@ -13,8 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: npm i
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
 
       - name: Run Lighthouse CI
         run: npm run lhci:autorun
