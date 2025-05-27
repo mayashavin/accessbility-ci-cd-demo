@@ -16,11 +16,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Or your project's preferred Node.js version
+          node-version: '22.4.x' # Or your project's preferred Node.js version
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm i
 
       - name: Run Lighthouse CI
         run: npm run lhci:autorun
@@ -46,7 +46,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Match your project's Node.js version
+          node-version: '22.4.x' # Or your project's preferred Node.js version
           cache: 'npm'
 
       - name: Install dependencies
@@ -104,32 +104,9 @@ jobs:
         # Consider adding 'continue-on-error: true' if the summary is non-critical
 
       - name: Post summary to PR
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const summary = `${{ steps.summary_generation.outputs.summary_content }}`.trim();
-
-            if (!summary) {
-              console.log("Summary is empty or the generation script failed. Skipping PR comment.");
-              return;
-            }
-
-            const prNumber = context.issue.number;
-            if (!prNumber) {
-              console.log("Could not determine PR number (event is not a PR or context is missing). Skipping comment.");
-              return;
-            }
-
-            try {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: `## Automated Accessibility Summary
-                  ${summary}`
-              });
-            } catch (error) {
-              console.error("Failed to post PR comment:", error);
-              core.setFailed(`Failed to post PR comment: ${error.message}`);
-            }
+        env:
+          SUMMARY_CONTENT: ${{ steps.summary_generation.outputs.summary_content }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/post-pr-comment.js

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import AddTaskForm from './components/AddTaskForm';
+import A11yPlayground from './components/A11yPlayground';
+import Counter from './components/Counter'; // Import the Counter component
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
+  const [currentView, setCurrentView] = useState('tasks'); // 'tasks', 'playground', or 'counter'
 
   // Fetch tasks from API on component mount
   useEffect(() => {
@@ -65,46 +68,99 @@ export default function App() {
   return (
     <div
       style={{
-        maxWidth: '600px',
+        maxWidth: '800px',
         margin: '40px auto',
         padding: '30px',
         fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
-        color: '#333', // Darker text for better readability on light backgrounds
+        color: '#333',
         backgroundColor: '#f9f9f9',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
       }}
     >
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <img
-          src='/logo.png'
-          style={{ height: '50px', marginBottom: '10px' }}
-          alt='Logo'
-        />
-        <h1 style={{ margin: 0, color: '#007bff' }}>Task Management</h1>
-      </div>
-
-      <AddTaskForm onAddTask={handleAddTask} />
-      <TaskList tasks={tasks} onRemoveTask={handleRemoveTask} />
-
-      <div
-        onClick={() => alert('Clicked a generic div!')}
+      <nav
         style={{
-          display: 'inline-block', // To make padding and width behave like a button
-          marginTop: '30px',
-          padding: '10px 20px', // Standard button padding
-          backgroundColor: '#6c757d', // Bootstrap secondary button color
-          color: '#ffffff', // White text
-          cursor: 'pointer',
-          textAlign: 'center',
-          borderRadius: '4px', // Rounded corners
-          border: '1px solid #6c757d', // Matching border
-          fontWeight: 'bold', // Bold text for button feel
-          userSelect: 'none', // Prevent text selection on click
+          marginBottom: '20px',
+          paddingBottom: '10px',
+          borderBottom: '1px solid #eee',
         }}
       >
-        Another Clickable Div (Inaccessible)
-      </div>
+        <button
+          onClick={() => setCurrentView('tasks')}
+          style={{
+            marginRight: '10px',
+            padding: '8px 15px',
+            cursor: 'pointer',
+            backgroundColor: currentView === 'tasks' ? '#007bff' : '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Task Management
+        </button>
+        <button
+          onClick={() => setCurrentView('playground')}
+          style={{
+            marginRight: '10px', // Added margin for spacing
+            padding: '8px 15px',
+            cursor: 'pointer',
+            backgroundColor:
+              currentView === 'playground' ? '#007bff' : '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Accessibility Playground
+        </button>
+        <button 
+          onClick={() => setCurrentView('counter')} // Add button for Counter view
+          style={{
+            padding: '8px 15px',
+            cursor: 'pointer',
+            backgroundColor: currentView === 'counter' ? '#007bff' : '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Counter
+        </button>
+      </nav>
+
+      {currentView === 'tasks' && (
+        <>
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <img
+              src='/logo.png'
+              style={{ height: '50px', marginBottom: '10px' }}
+              alt='Logo'
+            />
+            <h1 style={{ margin: 0, color: '#007bff' }}>Task Management</h1>
+          </div>
+          <AddTaskForm onAddTask={handleAddTask} />
+          <TaskList tasks={tasks} onRemoveTask={handleRemoveTask} />
+          <button
+            type="button"
+            onClick={() => alert('Clicked a button!')}
+            style={{
+              display: 'inline-block',
+              marginTop: '30px',
+              padding: '10px 20px',
+              backgroundColor: '#6c757d',
+              color: '#ffffff',
+              borderRadius: '4px',
+              border: '1px solid #6c757d',
+              fontWeight: 'bold',
+            }}
+          >
+            Another Clickable Element (Accessible)
+          </button>
+        </>
+      )}
+      {currentView === 'playground' && <A11yPlayground />}
+      {currentView === 'counter' && <Counter />} {/* Conditionally render Counter */}
     </div>
   );
 }

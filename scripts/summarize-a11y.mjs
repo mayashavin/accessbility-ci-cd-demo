@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-const { OpenAI } = require('openai');
+import fs from 'fs';
+import path from 'path';
+import { OpenAI } from 'openai';
 
 async function main() {
   const reportsDir = process.argv[2];
   if (!reportsDir) {
     console.error(
-      'Usage: node summarize-a11y.js <path-to-lighthouse-reports-directory>'
+      'Usage: node summarize-a11y.mjs <path-to-lighthouse-reports-directory>'
     );
     process.exit(1);
   }
@@ -23,13 +23,13 @@ async function main() {
   try {
     const files = fs.readdirSync(reportsDir);
     for (const file of files) {
-      // Standard Lighthouse reports often start with 'lhr-' or are just .json from direct output
       if (path.extname(file) === '.json') {
         const filePath = path.join(reportsDir, file);
         let lighthouseResult;
         try {
           const reportContent = fs.readFileSync(filePath, 'utf-8');
           lighthouseResult = JSON.parse(reportContent);
+          console.log(lighthouseResult);
         } catch (parseError) {
           console.warn(
             `Warning: Could not parse JSON from file ${file}: ${parseError.message}. Skipping this file.`
@@ -72,8 +72,6 @@ async function main() {
         if (accessibilityCategory.auditRefs && lighthouseResult.audits) {
           for (const auditRef of accessibilityCategory.auditRefs) {
             const audit = lighthouseResult.audits[auditRef.id];
-            // Consider an audit "failing" if its score is not 1 (and not null)
-            // and it's not purely informational or manual.
             if (
               audit &&
               audit.score !== null &&
@@ -110,44 +108,32 @@ async function main() {
 
   if (reportDetails.length === 0) {
     console.log('No valid Lighthouse JSON reports found to summarize.');
-    // Exiting with 0 as this is not an error state for the script itself,
-    // but means no summary can be generated. The calling workflow step
-    // will capture this stdout.
     return;
   }
 
-  let prompt = `Generate a concise summary of accessibility issues from the following Lighthouse reports.
-For each report, include:
-- URL
-- Accessibility Score (%)
-- Key Failing Audits (titles only, if any)
-Each in a new line.
-Then, provide a brief overall assessment of the accessibility status and any common themes or critical issues.
-Be brief and focus on actionable insights. If no failing audits, state that.
-
-`;
+  let prompt = `Generate a concise summary of accessibility issues from the following Lighthouse reports.\nFor each report, include:\n- URL\n- Accessibility Score (%)\n- Key Failing Audits (titles only, if any)\n\nThen, provide a brief overall assessment of the accessibility status and any common themes or critical issues.\nBe brief and focus on actionable insights. If no failing audits, state that.\n\n`;
 
   reportDetails.forEach((detail, index) => {
-    prompt += `Report ${index + 1}:`;
-    prompt += `URL: ${detail.url}`;
-    prompt += `Accessibility Score: ${detail.accessibilityScoreText}`;
+    prompt += `Report ${index + 1}:\n`;
+    prompt += `URL: ${detail.url}\n`;
+    prompt += `Accessibility Score: ${detail.accessibilityScoreText}\n`;
     if (detail.failingAudits.length > 0) {
-      prompt += `Failing Audits: ${detail.failingAudits
+      prompt += `Failing Audits:\n${detail.failingAudits
         .map((title) => `- ${title}`)
-        .join('')}`;
+        .join('\n')}\n`;
     } else {
-      prompt += `Failing Audits: None`;
+      prompt += `Failing Audits: None\n`;
     }
-    prompt += '';
+    prompt += '\n';
   });
   prompt += 'Overall Assessment:';
 
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', // Consider gpt-4o-mini or gpt-4o for potentially better results
+      model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3, // Lower temperature for more factual summaries
-      max_tokens: 600, // Increased slightly for multiple reports
+      temperature: 0.3,
+      max_tokens: 600,
     });
 
     if (
@@ -166,10 +152,8 @@ Be brief and focus on actionable insights. If no failing audits, state that.
   } catch (error) {
     console.error(`Error calling OpenAI API: ${error.message}`);
     if (error.response) {
-      // Axios-like error structure
       console.error('OpenAI API Response Error Data:', error.response.data);
     } else if (error.status) {
-      // Fetch-like error structure or openai specific
       console.error('OpenAI API Response Error Status:', error.status);
       console.error('OpenAI API Response Error Message:', error.message);
     }
@@ -178,7 +162,6 @@ Be brief and focus on actionable insights. If no failing audits, state that.
 }
 
 main().catch((error) => {
-  // Errors from main function if not caught internally (e.g., unhandled promise rejections not from API call)
   console.error('An unexpected error occurred in the script:', error.message);
   process.exit(1);
 });
