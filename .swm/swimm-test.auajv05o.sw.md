@@ -15,18 +15,18 @@ We will cover:
 
 # Integration of the Accessibility Playground component
 
-<SwmSnippet path="client/App.jsx" line="4">
+<SwmSnippet path="/client/App.jsx" line="5">
 
 ---
 
 The Accessibility Playground component is introduced to test and demonstrate various accessibility features and issues. It is imported and conditionally rendered based on the current view state.
 
 ```
-import A11yPlayground from './components/A11yPlayground'; // Import the new component
+import Counter from './components/Counter'; // Import the Counter component
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
-  const [currentView, setCurrentView] = useState('tasks'); // 'tasks' or 'playground'
+  const [currentView, setCurrentView] = useState('tasks'); // 'tasks', 'playground', or 'counter'
 ```
 
 ---
@@ -35,11 +35,11 @@ export default function App() {
 
 # Switching between task management and playground
 
-<SwmSnippet path="client/App.jsx" line="80">
+<SwmSnippet path="/client/App.jsx" line="81">
 
 ---
 
-The application allows users to switch between task management and the accessibility playground. This is achieved through a navigation bar with buttons that toggle the <SwmToken path="/client/App.jsx" pos="107:1:1" line-data="              currentView === &#39;playground&#39; ? &#39;#007bff&#39; : &#39;#6c757d&#39;,">`currentView`</SwmToken> state.
+The application allows users to switch between task management and the accessibility playground. This is achieved through a navigation bar with buttons that toggle the <SwmToken path="/client/App.jsx" pos="109:1:1" line-data="              currentView === &#39;playground&#39; ? &#39;#007bff&#39; : &#39;#6c757d&#39;,">`currentView`</SwmToken> state.
 
 ```
       <nav
@@ -66,6 +66,7 @@ The application allows users to switch between task management and the accessibi
         <button
           onClick={() => setCurrentView('playground')}
           style={{
+            marginRight: '10px', // Added margin for spacing
             padding: '8px 15px',
             cursor: 'pointer',
             backgroundColor:
