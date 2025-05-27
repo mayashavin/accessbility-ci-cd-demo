@@ -20,7 +20,7 @@ jobs:
       - name: Run Lighthouse CI
         # This assumes @lhci/cli is in your devDependencies in package.json
         # and your lighthouserc.js is configured (e.g., startServerCommand).
-        run: npm lhci:autorun
+        run: npm run lhci:autorun
         env:
           # GITHUB_TOKEN is automatically provided by GitHub Actions.
           # LHCI uses this token to add status checks to your PRs.
