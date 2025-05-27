@@ -13,12 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Or your project's preferred Node.js version
-          cache: 'npm'
-
       - name: Install dependencies
         run: npm i
 
@@ -42,12 +36,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Match your project's Node.js version
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm i
