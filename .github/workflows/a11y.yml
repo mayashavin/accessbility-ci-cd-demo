@@ -7,5 +7,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm ci
-      - run: lhci autorun
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Or your project's preferred Node.js version (e.g., 'lts/*')
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lighthouse CI
+        # This assumes @lhci/cli is in your devDependencies in package.json
+        # and your lighthouserc.js is configured (e.g., startServerCommand).
+        run: npx lhci autorun
+        env:
+          # GITHUB_TOKEN is automatically provided by GitHub Actions.
+          # LHCI uses this token to add status checks to your PRs.
+          LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
