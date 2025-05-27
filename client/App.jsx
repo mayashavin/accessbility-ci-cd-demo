@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import AddTaskForm from './components/AddTaskForm';
-import A11yPlayground from './components/A11yPlayground'; // Import the new component
+import A11yPlayground from './components/A11yPlayground';
+import Counter from './components/Counter'; // Import the Counter component
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
-  const [currentView, setCurrentView] = useState('tasks'); // 'tasks' or 'playground'
+  const [currentView, setCurrentView] = useState('tasks'); // 'tasks', 'playground', or 'counter'
 
   // Fetch tasks from API on component mount
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function App() {
   return (
     <div
       style={{
-        maxWidth: '800px', // Increased max-width to accommodate playground
+        maxWidth: '800px',
         margin: '40px auto',
         padding: '30px',
         fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
@@ -101,6 +102,7 @@ export default function App() {
         <button
           onClick={() => setCurrentView('playground')}
           style={{
+            marginRight: '10px', // Added margin for spacing
             padding: '8px 15px',
             cursor: 'pointer',
             backgroundColor:
@@ -112,9 +114,22 @@ export default function App() {
         >
           Accessibility Playground
         </button>
+        <button 
+          onClick={() => setCurrentView('counter')} // Add button for Counter view
+          style={{
+            padding: '8px 15px',
+            cursor: 'pointer',
+            backgroundColor: currentView === 'counter' ? '#007bff' : '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Counter
+        </button>
       </nav>
 
-      {currentView === 'tasks' ? (
+      {currentView === 'tasks' && (
         <>
           <div style={{ textAlign: 'center', marginBottom: '30px' }}>
             <img
@@ -145,9 +160,9 @@ export default function App() {
             Another Clickable Div (Inaccessible)
           </div>
         </>
-      ) : (
-        <A11yPlayground />
       )}
+      {currentView === 'playground' && <A11yPlayground />}
+      {currentView === 'counter' && <Counter />} {/* Conditionally render Counter */}
     </div>
   );
 }
